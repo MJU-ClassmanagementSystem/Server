@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.subject.Dto.SubjectFocusRateDto;
 import mju.capstone.cms.domain.teacher.Service.TeacherService;
+import mju.capstone.cms.domain.teacher.dto.TeacherSignupDto;
 import mju.capstone.cms.global.BaseResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
@@ -16,6 +15,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TeacherController {
     private final TeacherService teacherService;
+
+    //회원가입
+    @PostMapping("/signup/teacher")
+    public BaseResponse<String> signup(@RequestBody TeacherSignupDto teacherSignupDto) {
+        String id = teacherService.signup(teacherSignupDto.getId(), teacherSignupDto.getPassword(), teacherSignupDto.getName(), teacherSignupDto.getSchool());
+        return new BaseResponse<>(
+            200,
+            "선생님 회원가입 완료!",
+            id
+        );
+    }
+
+
 
     // 수업 관리
     @GetMapping("/class/{week}")

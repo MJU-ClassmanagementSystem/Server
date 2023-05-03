@@ -105,7 +105,26 @@ public class TeacherService {
         return doubleList;
     }
 
+    //회원가입
+    public String signup(String id, String password, String name, String school) {
 
+        //이미 있는 아이디 -> 예외
+        teacherRepository.findById(id)
+            .ifPresent(teacher -> {
+                throw new IllegalStateException("teacher already exists");
+            });
+
+
+        Teacher teacher = Teacher.builder()
+            .id(id)
+            .password(password)
+            .name(name)
+            .school(school)
+            .build();
+
+        Teacher save = teacherRepository.save(teacher);
+        return save.getId();
+    }
 
 
 

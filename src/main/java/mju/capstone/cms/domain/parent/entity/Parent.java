@@ -1,5 +1,7 @@
 package mju.capstone.cms.domain.parent.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -7,8 +9,10 @@ import org.hibernate.annotations.DynamicInsert;
 import javax.persistence.*;
 
 @Getter
+@Builder
 @DynamicInsert
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Parent {
 
