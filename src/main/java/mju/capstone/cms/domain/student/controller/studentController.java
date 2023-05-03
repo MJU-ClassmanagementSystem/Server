@@ -1,4 +1,4 @@
-package mju.capstone.cms.student.controller;
+package mju.capstone.cms.domain.student.controller;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

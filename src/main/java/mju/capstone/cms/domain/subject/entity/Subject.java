@@ -1,8 +1,8 @@
-package mju.capstone.cms.subject.entity;
+package mju.capstone.cms.domain.subject.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import mju.capstone.cms.teacher.entity.Teacher;
+import mju.capstone.cms.domain.teacher.entity.Teacher;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;

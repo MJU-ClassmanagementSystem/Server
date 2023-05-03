@@ -1,4 +1,4 @@
-package mju.capstone.cms.teacher.entity;
+package mju.capstone.cms.domain.teacher.entity;
 
 import lombok.Builder;
 import lombok.Getter;

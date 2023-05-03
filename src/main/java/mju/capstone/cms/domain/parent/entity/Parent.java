@@ -1,4 +1,4 @@
-package mju.capstone.cms.parent.entity;
+package mju.capstone.cms.domain.parent.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

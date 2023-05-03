@@ -1,9 +1,9 @@
-package mju.capstone.cms.emotion.entity;
+package mju.capstone.cms.domain.emotion.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import mju.capstone.cms.student.entity.Student;
-import mju.capstone.cms.subject.entity.Subject;
+import mju.capstone.cms.domain.student.entity.Student;
+import mju.capstone.cms.domain.subject.entity.Subject;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
