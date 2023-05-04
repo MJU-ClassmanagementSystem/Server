@@ -1,6 +1,8 @@
 package mju.capstone.cms.domain.teacher.Service;
 
 import lombok.RequiredArgsConstructor;
+import mju.capstone.cms.domain.emotion.entity.Emotion;
+import mju.capstone.cms.domain.emotion.repository.EmotionRepository;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.focus.repository.FocusRepository;
 import mju.capstone.cms.domain.subject.Dto.SubjectFocusRateDto;
@@ -25,6 +27,7 @@ public class TeacherService {
     private final SubjectRepository subjectRepository;
     private final TeacherRepository teacherRepository;
     private final FocusRepository focusRepository;
+    private final EmotionRepository emotionRepository;
 
     // 수업 관리
     // 교사 id 가 1이라고 가정
@@ -44,18 +47,21 @@ public class TeacherService {
         System.out.println("교사1의 수업 목록!!");
         subjectList.stream().forEach(s -> System.out.println(s.getSubjectName()));
 
-        // 과목id만 가져와서 List 만들기
-        List<Long> subjectIdList = subjectList.stream()
-                .map(subject -> subject.getId())
-                .collect(Collectors.toList());
+//        // 과목id만 가져와서 List 만들기
+//        List<Long> subjectIdList = subjectList.stream()
+//                .map(subject -> subject.getId())
+//                .collect(Collectors.toList());
 
         // 과목 객체
         for (Subject subject : subjectList) {
-            SubjectFocusRateDto dto = new SubjectFocusRateDto();
-            dto.setSubjectName(subject.getSubjectName());
-            // 이 부분 바꾸면 됨
-            dto.setFocusRate(calcWeekFocus(week, subject.getId()));
-            SubjectFocusRateList.add(dto);
+            SubjectFocusRateDto SubjectFocusRate = new SubjectFocusRateDto();
+            SubjectFocusRate.setSubjectName(subject.getSubjectName());
+            // 집중도
+            SubjectFocusRate.setFocusRate(calcWeekFocus(week, subject.getId()));
+            // 흥미도
+            SubjectFocusRate.setInterestRate(calcWeekinterest(week, subject.getId()));
+            
+            SubjectFocusRateList.add(SubjectFocusRate);
         }
 
         return SubjectFocusRateList;
@@ -63,6 +69,7 @@ public class TeacherService {
 
     // 사용
     // 주차별로 해당 과목 평균 집중도 리스트 반환
+    // 집중도 공식 : focusRate들의 평균
     public List<Double> calcWeekFocus(int week, Long subjectId) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -83,7 +90,7 @@ public class TeacherService {
 
         // 한 과목에 대해서만 집중 객체들 (subject id == 1)
 
-        List<Double> doubleList = new ArrayList<>();
+        List<Double> focusRateList = new ArrayList<>();
 
         // 일주일 치 (5일) 반복
         for (int i=0; i<5; i++) {
@@ -99,11 +106,60 @@ public class TeacherService {
                 result += f.getFocusRate();
                 count++;
             }
-            doubleList.add(result / count);
+            focusRateList.add(result / count);
         }
 
-        return doubleList;
+        return focusRateList;
     }
+
+
+    // 사용
+    // 주차별로 해당 과목 평균 흥미도 리스트 반환
+    // 집중도 공식 : focusRate들의 평균
+    // 흥미도 가짜 공식 : happy 감정의 평균
+    public List<Double> calcWeekinterest(int week, Long subjectId) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Calendar cal = Calendar.getInstance(Locale.KOREA);
+        cal.add(Calendar.DATE, -(week * 7));
+
+        System.out.println("오늘 날짜: " + sdf.format(cal.getTime()));
+
+        cal.add(Calendar.DATE, Calendar.MONDAY - (cal.get(Calendar.DAY_OF_WEEK)));
+        System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
+        LocalDate monday = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+
+        cal.add(Calendar.DATE, Calendar.FRIDAY - (cal.get(Calendar.DAY_OF_WEEK)));
+        System.out.println("금요일 날짜 : " + sdf.format(cal.getTime()));
+        LocalDate friday = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+
+        System.out.println("오늘 날짜22: " + sdf.format(cal.getTime()));
+
+        // 한 과목에 대해서만 흥미도(감정) 객체들 (subject id == 1)
+
+        List<Double> interestRateList = new ArrayList<>();
+
+        // 일주일 치 (5일) 반복
+        for (int i=0; i<5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+            System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
+            LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+            List<Emotion> emotionList = emotionRepository.findBySubjectIdAndDateBetween(subjectId, monday1, monday1);
+
+            Double result = 0.0;
+            int count = 0;
+
+            for (Emotion e : emotionList) {
+                result += e.getHappy();
+                count++;
+            }
+            interestRateList.add(result / count);
+        }
+
+        return interestRateList;
+    }
+    
+    
 
     //회원가입
     public String signup(String id, String password, String name, String school) {
