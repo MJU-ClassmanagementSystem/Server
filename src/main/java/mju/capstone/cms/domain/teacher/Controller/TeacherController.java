@@ -2,7 +2,8 @@ package mju.capstone.cms.domain.teacher.Controller;
 
 import lombok.RequiredArgsConstructor;
 import mju.capstone.cms.domain.focus.entity.Focus;
-import mju.capstone.cms.domain.subject.Dto.SubjectFocusRateDto;
+import mju.capstone.cms.domain.student.dto.StudentDto;
+import mju.capstone.cms.domain.subject.dto.SubjectFocusRateDto;
 import mju.capstone.cms.domain.teacher.Service.TeacherService;
 import mju.capstone.cms.domain.teacher.dto.TeacherSignupDto;
 import mju.capstone.cms.global.BaseResponse;
@@ -36,6 +37,16 @@ public class TeacherController {
                 200,
                 "수업 관리!",
                 teacherService.manageClass(week)
+        );
+    }
+
+    // 교사의 모든 학생 조회
+    @GetMapping("/student/{teacherId}")
+    public BaseResponse<List<StudentDto>> getAllStudent(@PathVariable("teacherId") String teacherId) {
+        return new BaseResponse<>(
+                200,
+                "교사의 모든 학생 조회 성공",
+                teacherService.getAllStudent(teacherId)
         );
     }
 

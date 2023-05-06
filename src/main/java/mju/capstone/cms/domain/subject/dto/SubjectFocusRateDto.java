@@ -1,4 +1,4 @@
-package mju.capstone.cms.domain.subject.Dto;
+package mju.capstone.cms.domain.subject.dto;
 
 import lombok.Builder;
 import lombok.Getter;
