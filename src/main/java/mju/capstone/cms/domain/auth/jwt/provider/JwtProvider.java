@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Date;
@@ -48,10 +49,18 @@ public class JwtProvider implements InitializingBean {
             .compact();
     }
 
+    public String extractToken(String bearerToken) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.split(" ")[1];
+        }
+        return null;
+    }
+
     /**
      * token 으로부터 id(sub) 추출
      */
-    public String extractId(String token) {
+    public String extractId(String bearerToken) {
+        String token = extractToken(bearerToken);
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
@@ -63,7 +72,8 @@ public class JwtProvider implements InitializingBean {
     /**
      * token 으로부터 type 추출
      */
-    public String extractType(String token) {
+    public String extractType(String bearerToken) {
+        String token = extractToken(bearerToken);
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()

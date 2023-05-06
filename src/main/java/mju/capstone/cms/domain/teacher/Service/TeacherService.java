@@ -12,6 +12,7 @@ import mju.capstone.cms.domain.subject.dto.SubjectFocusRateDto;
 import mju.capstone.cms.domain.subject.Repository.SubjectRepository;
 import mju.capstone.cms.domain.subject.entity.Subject;
 import mju.capstone.cms.domain.teacher.Repository.TeacherRepository;
+import mju.capstone.cms.domain.teacher.dto.TeacherSignupResponseDto;
 import mju.capstone.cms.domain.teacher.entity.Teacher;
 import org.springframework.stereotype.Service;
 
@@ -166,7 +167,7 @@ public class TeacherService {
     
 
     //회원가입
-    public String signup(String id, String password, String name, String school) {
+    public Teacher signup(String id, String password, String name, String school) {
 
         //이미 있는 아이디 -> 예외
         teacherRepository.findById(id)
@@ -182,8 +183,7 @@ public class TeacherService {
             .school(school)
             .build();
 
-        Teacher save = teacherRepository.save(teacher);
-        return save.getId();
+        return teacherRepository.save(teacher);
     }
 
     // 교사의 모든 학생 조회
