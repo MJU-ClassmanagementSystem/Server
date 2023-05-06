@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.subject.Dto.SubjectFocusRateDto;
 import mju.capstone.cms.domain.teacher.Service.TeacherService;
-import mju.capstone.cms.domain.teacher.dto.TeacherSignupDto;
+import mju.capstone.cms.domain.teacher.dto.TeacherSignupRequestDto;
+import mju.capstone.cms.domain.teacher.dto.TeacherSignupResponseDto;
+import mju.capstone.cms.domain.teacher.entity.Teacher;
 import mju.capstone.cms.global.BaseResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,15 +20,14 @@ public class TeacherController {
 
     //회원가입
     @PostMapping("/signup/teacher")
-    public BaseResponse<String> signup(@RequestBody TeacherSignupDto teacherSignupDto) {
-        String id = teacherService.signup(teacherSignupDto.getId(), teacherSignupDto.getPassword(), teacherSignupDto.getName(), teacherSignupDto.getSchool());
+    public BaseResponse<TeacherSignupResponseDto> signup(@RequestBody TeacherSignupRequestDto teacherSignupRequestDto) {
+        Teacher teacher = teacherService.signup(teacherSignupRequestDto.getId(), teacherSignupRequestDto.getPassword(), teacherSignupRequestDto.getName(), teacherSignupRequestDto.getSchool());
         return new BaseResponse<>(
             200,
-            "선생님 회원가입 완료!",
-            id
+            "교사 회원가입 성공",
+            new TeacherSignupResponseDto(teacher.getId(), teacher.getName(), teacher.getSchool())
         );
     }
-
 
 
     // 수업 관리

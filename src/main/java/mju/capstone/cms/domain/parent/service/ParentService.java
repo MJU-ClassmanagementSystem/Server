@@ -14,7 +14,7 @@ public class ParentService {
     private final ParentRepository parentRepository;
 
     //회원가입
-    public String signup(String id, String password) {
+    public Parent signup(String id, String password) {
 
         //이미 있는 아이디 -> 예외
         parentRepository.findById(id)
@@ -27,7 +27,6 @@ public class ParentService {
             .password(password)
             .build();
 
-        Parent save = parentRepository.save(parent);
-        return save.getId();
+        return parentRepository.save(parent);
     }
 }
