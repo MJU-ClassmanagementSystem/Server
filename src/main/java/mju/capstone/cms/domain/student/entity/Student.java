@@ -51,4 +51,12 @@ public class Student {
         studentDto.setParentId(this.parent.getId());
         return studentDto;
     }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
 }

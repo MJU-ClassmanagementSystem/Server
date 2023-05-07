@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mju.capstone.cms.domain.parent.repository.ParentRepository;
 import mju.capstone.cms.domain.student.dto.StudentRegisterResponseDto;
 import mju.capstone.cms.domain.student.entity.Student;
-import mju.capstone.cms.domain.student.respository.StudentRepository;
+import mju.capstone.cms.domain.student.repository.StudentRepository;
 import mju.capstone.cms.domain.teacher.Repository.TeacherRepository;
 import mju.capstone.cms.domain.teacher.entity.Teacher;
 import org.springframework.stereotype.Service;
