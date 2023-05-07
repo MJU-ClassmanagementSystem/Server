@@ -19,7 +19,7 @@ public class ParentController {
     //회원가입-부모
     @PostMapping("/signup/parent")
     public BaseResponse<ParentSignupResponseDto> signup(@RequestBody ParentSignupRequestDto parentSignupDto) {
-        Parent parent = parentService.signup(parentSignupDto.getId(), parentSignupDto.getPassword());
+        Parent parent = parentService.signup(parentSignupDto.getId(), parentSignupDto.getPassword(), parentSignupDto.getStudentId());
 
         //자녀 등록 로직 필요.
 
