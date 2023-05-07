@@ -5,7 +5,10 @@ import mju.capstone.cms.domain.emotion.entity.Emotion;
 import mju.capstone.cms.domain.emotion.repository.EmotionRepository;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.focus.repository.FocusRepository;
-import mju.capstone.cms.domain.subject.Dto.SubjectFocusRateDto;
+import mju.capstone.cms.domain.student.dto.StudentDto;
+import mju.capstone.cms.domain.student.entity.Student;
+import mju.capstone.cms.domain.student.repository.StudentRepository;
+import mju.capstone.cms.domain.subject.dto.SubjectFocusRateDto;
 import mju.capstone.cms.domain.subject.Repository.SubjectRepository;
 import mju.capstone.cms.domain.subject.entity.Subject;
 import mju.capstone.cms.domain.teacher.Repository.TeacherRepository;
@@ -29,6 +32,7 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final FocusRepository focusRepository;
     private final EmotionRepository emotionRepository;
+    private final StudentRepository studentRepository;
 
     // 수업 관리
     // 교사 id 가 1이라고 가정
@@ -182,7 +186,21 @@ public class TeacherService {
         return teacherRepository.save(teacher);
     }
 
+    // 교사의 모든 학생 조회
+    public List<StudentDto> getAllStudent(String teacherId) {
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
 
+
+        List<Student> students = studentRepository.findByTeacher(teacher);
+        List<StudentDto> studentDtos = new ArrayList<>();
+
+        for (Student student : students) {
+            studentDtos.add(student.toDto());
+        }
+
+        return studentDtos;
+    }
 
 
 
