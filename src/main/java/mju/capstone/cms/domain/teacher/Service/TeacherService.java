@@ -176,14 +176,27 @@ public class TeacherService {
             });
 
 
-        Teacher teacher = Teacher.builder()
+        Teacher t = Teacher.builder()
             .id(id)
             .password(password)
             .name(name)
             .school(school)
             .build();
 
-        return teacherRepository.save(teacher);
+        Teacher teacher = teacherRepository.save(t);
+
+        Subject korean = Subject.builder().subjectName("국어").teacher(teacher).build();
+        subjectRepository.save(korean);
+        Subject english = Subject.builder().subjectName("영어").teacher(teacher).build();
+        subjectRepository.save(english);
+        Subject math = Subject.builder().subjectName("수학").teacher(teacher).build();
+        subjectRepository.save(math);
+        Subject society = Subject.builder().subjectName("사회").teacher(teacher).build();
+        subjectRepository.save(society);
+        Subject science = Subject.builder().subjectName("과학").teacher(teacher).build();
+        subjectRepository.save(science);
+
+        return teacher;
     }
 
     // 교사의 모든 학생 조회
