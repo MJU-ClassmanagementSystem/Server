@@ -1,6 +1,7 @@
 package mju.capstone.cms.domain.student.service;
 
 import lombok.RequiredArgsConstructor;
+import mju.capstone.cms.domain.emotion.dto.StudentDayEmotionDto;
 import mju.capstone.cms.domain.emotion.entity.Emotion;
 import mju.capstone.cms.domain.emotion.repository.EmotionRepository;
 import mju.capstone.cms.domain.focus.entity.Focus;
@@ -71,7 +72,7 @@ public class StudentService {
             // 집중도
             SubjectFocusRate.setFocusRate(calcWeekFocus(studentId, week, subject.getId()));
             // 흥미도
-            SubjectFocusRate.setInterestRate(calcWeekinterest(studentId, week, subject.getId()));
+            SubjectFocusRate.setInterestRate(calcWeekInterest(studentId, week, subject.getId()));
 
             SubjectFocusRateList.add(SubjectFocusRate);
         }
@@ -119,7 +120,7 @@ public class StudentService {
     // 주차별로 해당 과목 평균 흥미도 리스트 반환
     // 집중도 공식 : focusRate
     // 흥미도 가짜 공식 : happy 감정만 추출
-    public List<Double> calcWeekinterest(String studentId, int week, Long subjectId) {
+    public List<Double> calcWeekInterest(String studentId, int week, Long subjectId) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         Calendar cal = Calendar.getInstance(Locale.KOREA);
@@ -145,5 +146,61 @@ public class StudentService {
         }
 
         return interestRateList;
+    }
+
+    // 학생 관리 - 학교생활 - 학생 한명에 대한 감정 조회
+    public List<StudentDayEmotionDto> studentManagementForRecess(String studentId, int week) {
+        List<StudentDayEmotionDto> StudentDayEmotionList = new ArrayList<>();
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("student not found"));
+
+        List<Double> list = new ArrayList<>();
+
+        for (int i=0; i<5; i++) {
+            StudentDayEmotionDto studentDayEmotion = new StudentDayEmotionDto();
+            studentDayEmotion.setDay(i);
+            studentDayEmotion.setEmotionList(calcDayEmotion(studentId, week));
+
+            StudentDayEmotionList.add(studentDayEmotion);
+        }
+        return StudentDayEmotionList;
+    }
+
+    // 사용
+    // 날짜별로 해당 감정 퍼센트 리스트 반환
+    // 지금 없는 값은 NaN 나오고 있음
+    public List<Double> calcDayEmotion(String studentId, int week) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Calendar cal = Calendar.getInstance(Locale.KOREA);
+        cal.add(Calendar.DATE, -(week * 7));
+
+        // 한 과목에 대해서만 집중 객체들 (subject id == 1)
+
+        List<Double> focusRateList = new ArrayList<>();
+
+        // 일주일 치 (5일) 반복
+        for (int i=0; i<5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+            System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
+            LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+
+            try {
+                List<Emotion> emotionList = emotionRepository.findByStudentIdAndDateBetween(studentId, monday1, monday1);
+
+                Double result = 0.0;
+                int count = 0;
+
+                for (Emotion e : emotionList) {
+                    result += e.getHappy();
+                    count++;
+                }
+                focusRateList.add(result / count);
+            } catch (Exception e) {
+                focusRateList.add(0.0);
+            }
+        }
+
+        return focusRateList;
     }
 }
