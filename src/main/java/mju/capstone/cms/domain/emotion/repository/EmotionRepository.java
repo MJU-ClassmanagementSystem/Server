@@ -13,6 +13,11 @@ public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     @Query("SELECT e FROM Emotion e JOIN e.subject s WHERE s.id = :subjectId AND e.date BETWEEN :startDate AND :endDate")
     List<Emotion> findBySubjectIdAndDateBetween(@Param("subjectId") Long subjectId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+
     @Query("SELECT e FROM Emotion e JOIN e.subject s JOIN e.student st WHERE s.id = :subjectId AND e.date BETWEEN :startDate AND :endDate AND st.id = :studentId")
     Emotion findBySubjectIdAndStudentIdAndDateBetween(@Param("subjectId") Long subjectId, @Param("studentId") String studentId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+
+    @Query("SELECT e FROM Emotion e  JOIN e.student st WHERE  e.date BETWEEN :startDate AND :endDate AND st.id = :studentId")
+    List<Emotion> findByStudentIdAndDateBetween(@Param("studentId") String studentId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
