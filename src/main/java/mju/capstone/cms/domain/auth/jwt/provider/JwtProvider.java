@@ -14,7 +14,6 @@ import java.util.Date;
 
 
 @Slf4j
-@Component
 public class JwtProvider implements InitializingBean {
 
     //jwt에 생성에 사용되는 secret key
