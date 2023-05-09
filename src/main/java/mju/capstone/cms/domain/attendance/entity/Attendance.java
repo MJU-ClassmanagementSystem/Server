@@ -33,9 +33,13 @@ public class Attendance {
     @CreatedDate
     private LocalDate date; // 날짜만
 
+    // 추후 enum으로 교체?
+//    @Column(nullable = false)
+//    @Enumerated
+//    private AttendType attendType;
+
     @Column(nullable = false)
-    @Enumerated
-    private AttendType attendType;
+    private Long attendType;
 }
 
 enum AttendType {
