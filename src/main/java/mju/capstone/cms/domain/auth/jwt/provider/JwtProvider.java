@@ -92,7 +92,9 @@ public class JwtProvider implements InitializingBean {
     /**
      * token validation
      */
-    public boolean validateToken(String token) {
+    public boolean validateToken(String bearerToken) {
+        //토큰 추출. jwtFiler에서 Bearer enhj... 그대로 써서 오류났었음.
+        String token = extractToken(bearerToken);
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
