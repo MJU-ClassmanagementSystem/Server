@@ -35,11 +35,12 @@ public class TeacherController {
 
     // 수업 관리
     @GetMapping("/class/{week}")
-    public BaseResponse<List<SubjectFocusRateDto>> manageClass2(@PathVariable("week") int week) {
+    public BaseResponse<List<SubjectFocusRateDto>> manageClass2(@RequestHeader("Authorization") String token, @PathVariable("week") int week) {
+        String teacherId = jwtProvider.extractId(token);
         return new BaseResponse<>(
                 200,
                 "수업 관리!",
-                teacherService.manageClass(week)
+                teacherService.manageClass(teacherId, week)
         );
     }
 
