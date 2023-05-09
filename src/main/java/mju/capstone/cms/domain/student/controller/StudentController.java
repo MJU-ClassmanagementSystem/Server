@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/student")
 public class StudentController {
-
     private final StudentService studentService;
     private final JwtProvider jwtProvider;
 
@@ -62,11 +61,12 @@ public class StudentController {
     // 교사의 모든 학생들의 출석부
     // 부모가 볼때는 ??
     @GetMapping("/attendance/{week}")
-    public BaseResponse<List<AttendanceDto>> attendance(@PathVariable("week") int week) {
+    public BaseResponse<List<AttendanceDto>> attendance(@RequestHeader("Authorization") String token, @PathVariable("week") int week) {
+        String teacherId = jwtProvider.extractId(token);
         return new BaseResponse<>(
                 200,
                 "출석부",
-                studentService.attendance(week)
+                studentService.attendance(teacherId, week)
         );
     }
 }
