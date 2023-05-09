@@ -3,6 +3,7 @@ package mju.capstone.cms.domain.student.controller;
 import lombok.RequiredArgsConstructor;
 import mju.capstone.cms.domain.auth.jwt.provider.JwtProvider;
 import mju.capstone.cms.domain.emotion.dto.StudentDayEmotionDto;
+import mju.capstone.cms.domain.student.dto.AttendanceDto;
 import mju.capstone.cms.domain.student.dto.StudentRegisterRequestDto;
 import mju.capstone.cms.domain.student.dto.StudentRegisterResponseDto;
 import mju.capstone.cms.domain.student.service.StudentService;
@@ -25,9 +26,9 @@ public class StudentController {
         String teacherId = jwtProvider.extractId(token);
         StudentRegisterResponseDto register = studentService.register(requestDto.getId(), requestDto.getName(), teacherId);
         return new BaseResponse<>(
-            200,
-            "학생 등록 완료",
-            register
+                200,
+                "학생 등록 완료",
+                register
         );
     }
 
@@ -54,6 +55,18 @@ public class StudentController {
                 200,
                 "학생 관리 - 학교생활",
                 studentService.studentManagementForRecess(studentId, week)
+        );
+    }
+
+    // 출석부
+    // 교사의 모든 학생들의 출석부
+    // 부모가 볼때는 ??
+    @GetMapping("/attendance/{week}")
+    public BaseResponse<List<AttendanceDto>> attendance(@PathVariable("week") int week) {
+        return new BaseResponse<>(
+                200,
+                "출석부",
+                studentService.attendance(week)
         );
     }
 }
