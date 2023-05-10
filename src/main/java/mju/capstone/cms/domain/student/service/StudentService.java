@@ -209,9 +209,8 @@ public class StudentService {
     }
 
     // 출석부
-    public List<AttendanceDto> attendance(int week) {
-        // 교사 id 1이라고 가정, jwt 사용으로 바꿔야 함.
-        Teacher teacher = teacherRepository.findById("1")
+    public List<AttendanceDto> attendance(String teacherId, int week) {
+        Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
 
         List<Student> studentList = studentRepository.findByTeacher(teacher);

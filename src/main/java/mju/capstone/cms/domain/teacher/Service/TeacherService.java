@@ -35,15 +35,12 @@ public class TeacherService {
     private final StudentRepository studentRepository;
 
     // 수업 관리
-    // 교사 id 가 1이라고 가정
-    // subject의 averageFocusRate 가져오면 됨.
-    public List<SubjectFocusRateDto> manageClass(int week) {
+    public List<SubjectFocusRateDto> manageClass(String teacherId, int week) {
 
         List<SubjectFocusRateDto> SubjectFocusRateList = new ArrayList<>();
 
-        ////
         // 교번 1인 교사
-        Teacher teacher = teacherRepository.findById("1")
+        Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
 
         // 교사1의 수업 목록
@@ -51,11 +48,6 @@ public class TeacherService {
         // 출력
         System.out.println("교사1의 수업 목록!!");
         subjectList.stream().forEach(s -> System.out.println(s.getSubjectName()));
-
-//        // 과목id만 가져와서 List 만들기
-//        List<Long> subjectIdList = subjectList.stream()
-//                .map(subject -> subject.getId())
-//                .collect(Collectors.toList());
 
         // 과목 객체
         for (Subject subject : subjectList) {

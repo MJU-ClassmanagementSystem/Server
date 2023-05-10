@@ -1,6 +1,7 @@
 package mju.capstone.cms.domain.teacher.Controller;
 
 import lombok.RequiredArgsConstructor;
+import mju.capstone.cms.domain.auth.jwt.provider.JwtProvider;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.student.dto.StudentDto;
 import mju.capstone.cms.domain.subject.dto.SubjectFocusRateDto;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TeacherController {
     private final TeacherService teacherService;
+    private final JwtProvider jwtProvider;
 
     //회원가입
     @PostMapping("/signup/teacher")
@@ -33,17 +35,19 @@ public class TeacherController {
 
     // 수업 관리
     @GetMapping("/class/{week}")
-    public BaseResponse<List<SubjectFocusRateDto>> manageClass2(@PathVariable("week") int week) {
+    public BaseResponse<List<SubjectFocusRateDto>> manageClass2(@RequestHeader("Authorization") String token, @PathVariable("week") int week) {
+        String teacherId = jwtProvider.extractId(token);
         return new BaseResponse<>(
                 200,
                 "수업 관리!",
-                teacherService.manageClass(week)
+                teacherService.manageClass(teacherId, week)
         );
     }
 
     // 교사의 모든 학생 조회
-    @GetMapping("/student/{teacherId}")
-    public BaseResponse<List<StudentDto>> getAllStudent(@PathVariable("teacherId") String teacherId) {
+    @GetMapping("/student")
+    public BaseResponse<List<StudentDto>> getAllStudent(@RequestHeader("Authorization") String token) {
+        String teacherId = jwtProvider.extractId(token);
         return new BaseResponse<>(
                 200,
                 "교사의 모든 학생 조회 성공",
