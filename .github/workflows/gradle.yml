@@ -54,9 +54,8 @@ jobs:
         host: 35.216.61.210
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         envs: GITHUB_SHA
         script: |
           sudo docker pull haechankim/cms:${GITHUB_SHA::7}
-          sudo docker tag haechankim/cms:${GITHUB_SHA::7} cms
+          sudo docker tag haechankim/cms:${GITHUB_SHA::7} cms_spring
           sudo docker-compose up -d
