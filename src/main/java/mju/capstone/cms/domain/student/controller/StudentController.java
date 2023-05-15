@@ -31,6 +31,17 @@ public class StudentController {
         );
     }
 
+    // 학생 삭제
+    @DeleteMapping("")
+    public BaseResponse<String> delete(@RequestHeader("Authorization") String token, @RequestBody StudentRegisterRequestDto requestDto) {
+        String teacherId = jwtProvider.extractId(token);
+        return new BaseResponse<>(
+                200,
+                "학생 삭제 완료",
+                studentService.delete(requestDto.getId())
+        );
+    }
+
     // 학생 관리 수업 시간 - 학생 한명에 대한 집중도, 흥미도 조회
     @GetMapping("/class/{studentId}/{week}")
     public BaseResponse<List<SubjectFocusRateDto>> studentManagementForClass(
