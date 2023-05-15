@@ -52,6 +52,12 @@ public class StudentService {
         return new StudentRegisterResponseDto(id, name, teacherId);
     }
 
+    // 학생 삭제
+    public String delete(String studentId) {
+        studentRepository.deleteById(studentId);
+        return studentId;
+    }
+
     // 학생 관리 수업 시간 - 학생 한명에 대한 집중도, 흥미도 조회
     public List<SubjectFocusRateDto> studentManagementForClass(String studentId, int week) {
 
