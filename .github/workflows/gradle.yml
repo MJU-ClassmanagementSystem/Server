@@ -46,3 +46,17 @@ jobs:
         docker build -t cms .
         docker tag cms haechankim/cms:${GITHUB_SHA::7}
         docker push haechankim/cms:${GITHUB_SHA::7}
+        
+      # Deploy
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: 35.216.61.210
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        envs: GITHUB_SHA
+        script: |
+          sudo docker pull haechankim/cms:${GITHUB_SHA::7}
+          sudo docker tag haechankim/cms:${GITHUB_SHA::7} cms
+          sudo docker-compose up -d
