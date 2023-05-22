@@ -11,6 +11,7 @@ import mju.capstone.cms.domain.focus.repository.FocusRepository;
 import mju.capstone.cms.domain.parent.entity.Parent;
 import mju.capstone.cms.domain.parent.repository.ParentRepository;
 import mju.capstone.cms.domain.student.dto.AttendanceDto;
+import mju.capstone.cms.domain.student.dto.StudentDto;
 import mju.capstone.cms.domain.student.dto.StudentRegisterResponseDto;
 import mju.capstone.cms.domain.student.entity.Student;
 import mju.capstone.cms.domain.student.repository.StudentRepository;
@@ -54,6 +55,28 @@ public class StudentService {
         studentRepository.save(student);
         return new StudentRegisterResponseDto(id, name, teacherId);
     }
+
+    // 유저의 모든 학생 조회
+    public List<StudentDto> getAllStudent(String userId, String userType) {
+        List<Student> students = new ArrayList<>();
+        if (userType.equals("teacher")) {
+            Teacher teacher = teacherRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
+            students = studentRepository.findByTeacher(teacher);
+        } else if (userType.equals("parent")) {
+            Parent parent = parentRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("parent not found"));
+            students = studentRepository.findByParent(parent);
+        }
+        List<StudentDto> studentDtos = new ArrayList<>();
+
+        for (Student student : students) {
+            studentDtos.add(student.toDto());
+        }
+
+        return studentDtos;
+    }
+
 
     // 학생 삭제
     public String delete(String studentId) {
