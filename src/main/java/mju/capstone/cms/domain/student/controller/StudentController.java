@@ -70,14 +70,15 @@ public class StudentController {
 
     // 출석부
     // 교사의 모든 학생들의 출석부
-    // 부모가 볼때는 ??
+    // 유저가 교사인 경우, 학부모인 경우 반환값 분리 
     @GetMapping("/attendance/{week}")
     public BaseResponse<List<AttendanceDto>> attendance(@RequestHeader("Authorization") String token, @PathVariable("week") int week) {
-        String teacherId = jwtProvider.extractId(token);
+        String userId = jwtProvider.extractId(token);
+        String userType = jwtProvider.extractType(token);
         return new BaseResponse<>(
                 200,
                 "출석부",
-                studentService.attendance(teacherId, week)
+                studentService.attendance(userId, week, userType)
         );
     }
 }
