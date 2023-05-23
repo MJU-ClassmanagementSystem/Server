@@ -191,24 +191,6 @@ public class TeacherService {
         return teacher;
     }
 
-    // 교사의 모든 학생 조회
-    public List<StudentDto> getAllStudent(String teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
-
-
-        List<Student> students = studentRepository.findByTeacher(teacher);
-        List<StudentDto> studentDtos = new ArrayList<>();
-
-        for (Student student : students) {
-            studentDtos.add(student.toDto());
-        }
-
-        return studentDtos;
-    }
-
-
-
     ///////////////////////////////
     // 사용 안하는 메서드. 참고용
 

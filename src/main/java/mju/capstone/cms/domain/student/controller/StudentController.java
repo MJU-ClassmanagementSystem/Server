@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mju.capstone.cms.domain.auth.jwt.provider.JwtProvider;
 import mju.capstone.cms.domain.emotion.dto.StudentDayEmotionDto;
 import mju.capstone.cms.domain.student.dto.AttendanceDto;
+import mju.capstone.cms.domain.student.dto.StudentDto;
 import mju.capstone.cms.domain.student.dto.StudentRegisterRequestDto;
 import mju.capstone.cms.domain.student.dto.StudentRegisterResponseDto;
 import mju.capstone.cms.domain.student.service.StudentService;
@@ -28,6 +29,18 @@ public class StudentController {
                 200,
                 "학생 등록 완료",
                 register
+        );
+    }
+
+    // 유저의 모든 학생 조회
+    @GetMapping("")
+    public BaseResponse<List<StudentDto>> getAllStudent(@RequestHeader("Authorization") String token) {
+        String userId = jwtProvider.extractId(token);
+        String userType = jwtProvider.extractType(token);
+        return new BaseResponse<>(
+                200,
+                "유저의 모든 학생 조회 성공",
+                studentService.getAllStudent(userId, userType)
         );
     }
 
@@ -70,14 +83,15 @@ public class StudentController {
 
     // 출석부
     // 교사의 모든 학생들의 출석부
-    // 부모가 볼때는 ??
+    // 유저가 교사인 경우, 학부모인 경우 반환값 분리
     @GetMapping("/attendance/{week}")
     public BaseResponse<List<AttendanceDto>> attendance(@RequestHeader("Authorization") String token, @PathVariable("week") int week) {
-        String teacherId = jwtProvider.extractId(token);
+        String userId = jwtProvider.extractId(token);
+        String userType = jwtProvider.extractType(token);
         return new BaseResponse<>(
                 200,
                 "출석부",
-                studentService.attendance(teacherId, week)
+                studentService.attendance(userId, week, userType)
         );
     }
 }

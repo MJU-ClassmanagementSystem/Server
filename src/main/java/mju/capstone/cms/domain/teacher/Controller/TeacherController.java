@@ -44,20 +44,6 @@ public class TeacherController {
         );
     }
 
-    // 교사의 모든 학생 조회
-    @GetMapping("/student")
-    public BaseResponse<List<StudentDto>> getAllStudent(@RequestHeader("Authorization") String token) {
-        String teacherId = jwtProvider.extractId(token);
-        return new BaseResponse<>(
-                200,
-                "교사의 모든 학생 조회 성공",
-                teacherService.getAllStudent(teacherId)
-        );
-    }
-
-
-
-
     ///////////////////////////////
     // 사용 안하는 api. 참고용
     @GetMapping("/test2/{start}/{end}")

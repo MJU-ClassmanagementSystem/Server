@@ -8,7 +8,10 @@ import mju.capstone.cms.domain.emotion.entity.Emotion;
 import mju.capstone.cms.domain.emotion.repository.EmotionRepository;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.focus.repository.FocusRepository;
+import mju.capstone.cms.domain.parent.entity.Parent;
+import mju.capstone.cms.domain.parent.repository.ParentRepository;
 import mju.capstone.cms.domain.student.dto.AttendanceDto;
+import mju.capstone.cms.domain.student.dto.StudentDto;
 import mju.capstone.cms.domain.student.dto.StudentRegisterResponseDto;
 import mju.capstone.cms.domain.student.entity.Student;
 import mju.capstone.cms.domain.student.repository.StudentRepository;
@@ -39,6 +42,7 @@ public class StudentService {
     private final SubjectRepository subjectRepository;
     private final FocusRepository focusRepository;
     private final AttendanceRepository attendanceRepository;
+    private final ParentRepository parentRepository;
 
     public StudentRegisterResponseDto register(String id, String name, String teacherId) {
         Teacher teacher = teacherRepository.findById(teacherId)
@@ -51,6 +55,28 @@ public class StudentService {
         studentRepository.save(student);
         return new StudentRegisterResponseDto(id, name, teacherId);
     }
+
+    // 유저의 모든 학생 조회
+    public List<StudentDto> getAllStudent(String userId, String userType) {
+        List<Student> students = new ArrayList<>();
+        if (userType.equals("teacher")) {
+            Teacher teacher = teacherRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
+            students = studentRepository.findByTeacher(teacher);
+        } else if (userType.equals("parent")) {
+            Parent parent = parentRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("parent not found"));
+            students = studentRepository.findByParent(parent);
+        }
+        List<StudentDto> studentDtos = new ArrayList<>();
+
+        for (Student student : students) {
+            studentDtos.add(student.toDto());
+        }
+
+        return studentDtos;
+    }
+
 
     // 학생 삭제
     public String delete(String studentId) {
@@ -215,11 +241,22 @@ public class StudentService {
     }
 
     // 출석부
-    public List<AttendanceDto> attendance(String teacherId, int week) {
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
+    public List<AttendanceDto> attendance(String userId, int week, String userType) {
 
-        List<Student> studentList = studentRepository.findByTeacher(teacher);
+        List<Student> studentList = new ArrayList<>();
+
+        if (userType.equals("teacher")) {
+
+            Teacher teacher = teacherRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("teacher not found"));
+
+            studentList = studentRepository.findByTeacher(teacher);
+        } else if (userType.equals("parent")) {
+            Parent parent = parentRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("parent not found"));
+
+            studentList = studentRepository.findByParent(parent);
+        }
 
         List<AttendanceDto> attendanceList = new ArrayList<>();
         for (Student student : studentList) {
@@ -232,36 +269,7 @@ public class StudentService {
         return attendanceList;
     }
 
-//    // 출석부
-//    public List<Long> getStudentAttend(String studentId, int week) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-//        Calendar cal = Calendar.getInstance(Locale.KOREA);
-//        cal.add(Calendar.DATE, -(week * 7));
-//
-//        List<Long> attendList = new ArrayList<>();
-//
-//        for (int i=0; i<5; i++) {
-//            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
-//            System.out.println("i요일 날짜 : " + sdf.format(cal.getTime()));
-//            LocalDate day = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
-//
-//            List<Attendance> attendanceList = new ArrayList<>();;
-//
-//            try {
-//                attendanceList.add(attendanceRepository.findByStudentIdAndDateBetween(studentId, day, day));
-//
-//                for (Attendance attendance : attendanceList) {
-//                    attendList.add(attendance.getAttendType());
-//                }
-//
-//            } catch (NullPointerException e) {
-//                attendList.add(0L);
-//            }
-//        }
-//        return attendList;
-//    }
-
-    // 출석부
+    // 학생 한명에 대한 출석 가져오기
     public List<Long> getStudentAttend(String studentId, int week) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         Calendar cal = Calendar.getInstance(Locale.KOREA);
