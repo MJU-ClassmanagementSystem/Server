@@ -1,5 +1,7 @@
 package mju.capstone.cms.domain.emotion.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mju.capstone.cms.domain.student.entity.Student;
@@ -11,9 +13,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+@Builder
 @Getter
 @DynamicInsert
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Emotion {
