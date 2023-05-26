@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Example</title>
+    <script th:inline="javascript">
+        var socket;
+        //헤더 설정하기!
+        var authorizationHeader = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSIsInR5cGUiOiJ0ZWFjaGVyIiwiZXhwIjoxNjg1MDc4NDA3fQ.P_tdOoajAM141oNki_r6wvP_20lX9P3lrKlqGNSBzEQ';
+
+        function connectWebSocket() {
+            socket = new WebSocket('ws://localhost:8080/emotion?Authorization=' + encodeURIComponent(authorizationHeader));
+
+            socket.onopen = function (event) {
+                console.log('WebSocket connected');
+            };
+
+            socket.onclose = function (event) {
+                console.log('WebSocket disconnected');
+            };
+
+            socket.onmessage = function (event) {
+                console.log('Received message:', event.data);
+            };
+        }
+
+        //studentId 설정!!
+        function startSendingData() {
+            setInterval(function () {
+                var data = [{
+                    studentId: 'student1',        //studentId 설정!!
+                    angry: getRandomValue(),
+                    disgust: getRandomValue(),
+                    fear: getRandomValue(),
+                    happy: getRandomValue(),
+                    sad: getRandomValue(),
+                    surprise: getRandomValue(),
+                    neutral: getRandomValue()
+                },
+                    {
+                        studentId: 'student2',        //studentId 설정!!
+                        angry: getRandomValue(),
+                        disgust: getRandomValue(),
+                        fear: getRandomValue(),
+                        happy: getRandomValue(),
+                        sad: getRandomValue(),
+                        surprise: getRandomValue(),
+                        neutral: getRandomValue()
+                    }];
+
+                socket.send(JSON.stringify(data));
+            }, 100);
+        }
+
+        function stopSendingData() {
+            socket.close();
+        }
+
+        function getRandomValue() {
+            return Math.random();
+        }
+    </script>
+</head>
+<body>
+<button onclick="connectWebSocket()">Connect WebSocket</button>
+<button onclick="startSendingData()">Start Sending Data</button>
+<button onclick="stopSendingData()">Stop Sending Data</button>
+</body>
+</html>
