@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.util.List;
 
-@CrossOrigin(originPatterns = "http://127.0.0.1:5174")
+//@CrossOrigin(originPatterns = "http://127.0.0.1:5174")
 @RestController
 @RequiredArgsConstructor
 public class TeacherController {
