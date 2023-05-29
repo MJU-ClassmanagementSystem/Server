@@ -6,10 +6,12 @@ import mju.capstone.cms.domain.parent.dto.ParentSignupResponseDto;
 import mju.capstone.cms.domain.parent.entity.Parent;
 import mju.capstone.cms.domain.parent.service.ParentService;
 import mju.capstone.cms.global.BaseResponse;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+//@CrossOrigin(originPatterns = "http://127.0.0.1:5174")
 @RestController
 @RequiredArgsConstructor
 public class ParentController {

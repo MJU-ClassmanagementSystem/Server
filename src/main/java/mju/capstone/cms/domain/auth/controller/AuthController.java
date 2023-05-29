@@ -7,6 +7,7 @@ import mju.capstone.cms.domain.auth.service.AuthService;
 import mju.capstone.cms.global.BaseResponse;
 import org.springframework.web.bind.annotation.*;
 
+//@CrossOrigin(originPatterns = "http://127.0.0.1:5174")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {

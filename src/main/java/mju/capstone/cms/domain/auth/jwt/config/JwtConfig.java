@@ -12,6 +12,7 @@ import javax.servlet.Filter;
 @Configuration
 public class JwtConfig {
 
+
     //jwtProvider 수동 빈 등록.
     @Bean
     public JwtProvider jwtProvider() {
