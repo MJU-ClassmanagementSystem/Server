@@ -1,6 +1,7 @@
 package mju.capstone.cms.domain.emotion.repository;
 
 import mju.capstone.cms.domain.emotion.entity.Emotion;
+import mju.capstone.cms.domain.student.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +18,6 @@ public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     @Query("SELECT e FROM Emotion e JOIN e.subject s JOIN e.student st WHERE s.id = :subjectId AND e.date BETWEEN :startDate AND :endDate AND st.id = :studentId")
     Emotion findBySubjectIdAndStudentIdAndDateBetween(@Param("subjectId") Long subjectId, @Param("studentId") String studentId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-
-    @Query("SELECT e FROM Emotion e  JOIN e.student st WHERE  e.date BETWEEN :startDate AND :endDate AND st.id = :studentId")
-    List<Emotion> findByStudentIdAndDateBetween(@Param("studentId") String studentId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT e FROM Emotion e JOIN e.subject s WHERE s.subjectName = '쉬는시간' AND e.date BETWEEN :startDate AND :endDate AND e.student = :student")
+    List<Emotion> findRecessListByStudentAndDateBetween(@Param("student") Student student, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
