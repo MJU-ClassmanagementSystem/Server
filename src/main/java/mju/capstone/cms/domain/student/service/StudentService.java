@@ -175,7 +175,11 @@ public class StudentService {
             Emotion emotion;
             try {
                 emotion = emotionRepository.findBySubjectIdAndStudentIdAndDateBetween(subjectId, studentId, monday1, monday1);
-                interestRateList.add(emotion.getHappy());
+                Focus focus = focusRepository.findBySubjectIdAndStudentIdAndDateBetween(subjectId, emotion.getStudent().getId(), monday1, monday1);
+                double interestScore = (emotion.getHappy() + emotion.getNeutral() + emotion.getSurprise() - emotion.getAngry() - emotion.getDisgust() - emotion.getFear() - emotion.getSad() + 1) * 50;
+                double focusScore = focus.getFocusRate();
+                double result = (interestScore + focusScore) / 2;
+                interestRateList.add(result);
             } catch (NullPointerException e) {
                 interestRateList.add(0.0);
             }
