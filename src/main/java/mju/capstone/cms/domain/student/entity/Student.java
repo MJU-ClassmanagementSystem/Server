@@ -48,7 +48,11 @@ public class Student {
         studentDto.setId(this.id);
         studentDto.setName(this.name);
         studentDto.setTeacherId(this.teacher.getId());
-        studentDto.setParentId(this.parent.getId());
+        try {
+            studentDto.setParentId(this.parent.getId());
+        } catch (NullPointerException e) {
+            studentDto.setParentId(null);
+        }
         return studentDto;
     }
 
