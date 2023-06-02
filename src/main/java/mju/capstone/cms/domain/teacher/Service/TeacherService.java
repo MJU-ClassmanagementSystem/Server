@@ -147,7 +147,14 @@ public class TeacherService {
             int count = 0;
 
             for (Emotion e : emotionList) {
-                result += e.getHappy();
+                // 흥미도 공식
+                // 6개의 감정의 합이 1이 됨
+                // 긍정적 감정은 -, 긍정적 감정은 +
+                // 집중도 50% + 감정 기반 점수 50%
+                Focus focus = focusRepository.findBySubjectIdAndStudentIdAndDateBetween(subjectId, e.getStudent().getId(), monday1, monday1);
+                double interestScore = (e.getHappy() + e.getNeutral() + e.getSurprise() - e.getDisgust() - e.getFear() - e.getSad() + 1) * 50;
+                double focusScore = focus.getFocusRate();
+                result += (interestScore + focusScore) / 2;
                 count++;
             }
             interestRateList.add(result / count);
