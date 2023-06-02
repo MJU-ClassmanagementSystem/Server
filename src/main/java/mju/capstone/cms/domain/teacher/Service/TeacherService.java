@@ -5,14 +5,11 @@ import mju.capstone.cms.domain.emotion.entity.Emotion;
 import mju.capstone.cms.domain.emotion.repository.EmotionRepository;
 import mju.capstone.cms.domain.focus.entity.Focus;
 import mju.capstone.cms.domain.focus.repository.FocusRepository;
-import mju.capstone.cms.domain.student.dto.StudentDto;
-import mju.capstone.cms.domain.student.entity.Student;
 import mju.capstone.cms.domain.student.repository.StudentRepository;
 import mju.capstone.cms.domain.subject.dto.SubjectFocusRateDto;
 import mju.capstone.cms.domain.subject.Repository.SubjectRepository;
 import mju.capstone.cms.domain.subject.entity.Subject;
 import mju.capstone.cms.domain.teacher.Repository.TeacherRepository;
-import mju.capstone.cms.domain.teacher.dto.TeacherSignupResponseDto;
 import mju.capstone.cms.domain.teacher.entity.Teacher;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +29,6 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final FocusRepository focusRepository;
     private final EmotionRepository emotionRepository;
-    private final StudentRepository studentRepository;
 
     // 수업 관리
     public List<SubjectFocusRateDto> manageClass(String teacherId, int week) {
@@ -50,6 +46,7 @@ public class TeacherService {
         subjectList.stream().forEach(s -> System.out.println(s.getSubjectName()));
 
         // 과목 객체
+        // -> 쉬는 시간은 나오면 안됨
         for (Subject subject : subjectList) {
             SubjectFocusRateDto SubjectFocusRate = new SubjectFocusRateDto();
             SubjectFocusRate.setSubjectName(subject.getSubjectName());
@@ -57,7 +54,7 @@ public class TeacherService {
             SubjectFocusRate.setFocusRate(calcWeekFocus(week, subject.getId()));
             // 흥미도
             SubjectFocusRate.setInterestRate(calcWeekinterest(week, subject.getId()));
-            
+
             SubjectFocusRateList.add(SubjectFocusRate);
         }
 
@@ -90,8 +87,8 @@ public class TeacherService {
         List<Double> focusRateList = new ArrayList<>();
 
         // 일주일 치 (5일) 반복
-        for (int i=0; i<5; i++) {
-            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+        for (int i = 0; i < 5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY + i - (cal.get(Calendar.DAY_OF_WEEK)));
             System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
             LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
             List<Focus> focusList = focusRepository.findBySubjectIdAndDateBetween(subjectId, monday1, monday1);
@@ -137,8 +134,8 @@ public class TeacherService {
         List<Double> interestRateList = new ArrayList<>();
 
         // 일주일 치 (5일) 반복
-        for (int i=0; i<5; i++) {
-            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+        for (int i = 0; i < 5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY + i - (cal.get(Calendar.DAY_OF_WEEK)));
             System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
             LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
             List<Emotion> emotionList = emotionRepository.findBySubjectIdAndDateBetween(subjectId, monday1, monday1);
@@ -162,25 +159,23 @@ public class TeacherService {
 
         return interestRateList;
     }
-    
-    
 
     //회원가입
     public Teacher signup(String id, String password, String name, String school) {
 
         //이미 있는 아이디 -> 예외
         teacherRepository.findById(id)
-            .ifPresent(teacher -> {
-                throw new IllegalStateException("teacher already exists");
-            });
+                .ifPresent(teacher -> {
+                    throw new IllegalStateException("teacher already exists");
+                });
 
 
         Teacher t = Teacher.builder()
-            .id(id)
-            .password(password)
-            .name(name)
-            .school(school)
-            .build();
+                .id(id)
+                .password(password)
+                .name(name)
+                .school(school)
+                .build();
 
         Teacher teacher = teacherRepository.save(t);
 
@@ -194,6 +189,8 @@ public class TeacherService {
         subjectRepository.save(society);
         Subject science = Subject.builder().subjectName("과학").teacher(teacher).build();
         subjectRepository.save(science);
+        Subject recess = Subject.builder().subjectName("쉬는시간").teacher(teacher).build();
+        subjectRepository.save(recess);
 
         return teacher;
     }
@@ -214,15 +211,15 @@ public class TeacherService {
 //        cal.setTime(date);
         cal.add(Calendar.DATE, -(week * 7));
 
-        System.out.println("오늘 날짜: " + sdf.format(cal.getTime()));
+//        System.out.println("오늘 날짜: " + sdf.format(cal.getTime()));
 
         cal.add(Calendar.DATE, Calendar.MONDAY - (cal.get(Calendar.DAY_OF_WEEK)));
-        System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
+//        System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
         LocalDate monday = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
 //        cal.setTime(date);
         cal.add(Calendar.DATE, Calendar.FRIDAY - (cal.get(Calendar.DAY_OF_WEEK)));
-        System.out.println("금요일 날짜 : " + sdf.format(cal.getTime()));
+//        System.out.println("금요일 날짜 : " + sdf.format(cal.getTime()));
         LocalDate friday = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
         // 한 과목에 대해서만 집중 객체들 (subject id == 1)
@@ -250,15 +247,15 @@ public class TeacherService {
 //        cal.setTime(date);
         cal.add(Calendar.DATE, -(week * 7));
 
-        System.out.println("오늘 날짜: " + sdf.format(cal.getTime()));
+//        System.out.println("오늘 날짜: " + sdf.format(cal.getTime()));
 
         cal.add(Calendar.DATE, Calendar.MONDAY - (cal.get(Calendar.DAY_OF_WEEK)));
-        System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
+//        System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
         LocalDate monday = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
 //        cal.setTime(date);
         cal.add(Calendar.DATE, Calendar.FRIDAY - (cal.get(Calendar.DAY_OF_WEEK)));
-        System.out.println("금요일 날짜 : " + sdf.format(cal.getTime()));
+//        System.out.println("금요일 날짜 : " + sdf.format(cal.getTime()));
         LocalDate friday = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
         // 한 과목에 대해서만 집중 객체들 (subject id == 1)
@@ -281,7 +278,7 @@ public class TeacherService {
         Calendar cal = Calendar.getInstance(Locale.KOREA);
         cal.setTime(date);
 
-        System.out.println("입력 날짜: " + sdf.format(cal.getTime()));
+//        System.out.println("입력 날짜: " + sdf.format(cal.getTime()));
         LocalDate today = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
         return focusRepository.findBySubjectIdAndDateBetween(subjectId, today, today);
     }
@@ -296,7 +293,7 @@ public class TeacherService {
         Calendar cal = Calendar.getInstance(Locale.KOREA);
         cal.setTime(date);
 
-        System.out.println("입력 날짜: " + sdf.format(cal.getTime()));
+//        System.out.println("입력 날짜: " + sdf.format(cal.getTime()));
         LocalDate today = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
         List<Focus> focusList = focusRepository.findBySubjectIdAndDateBetween(subjectId, today, today);
 

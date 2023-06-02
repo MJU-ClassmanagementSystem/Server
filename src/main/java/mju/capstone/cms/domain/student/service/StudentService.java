@@ -130,8 +130,8 @@ public class StudentService {
         List<Double> focusRateList = new ArrayList<>();
 
         // 일주일 치 (5일) 반복
-        for (int i=0; i<5; i++) {
-            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+        for (int i = 0; i < 5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY + i - (cal.get(Calendar.DAY_OF_WEEK)));
             System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
             LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
@@ -160,15 +160,15 @@ public class StudentService {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         Calendar cal = Calendar.getInstance(Locale.KOREA);
-        cal.add(Calendar.DATE, - (week * 7));
+        cal.add(Calendar.DATE, -(week * 7));
 
         // 한 과목에 대해서만 흥미도(감정) 객체들 (subject id == 1)
 
         List<Double> interestRateList = new ArrayList<>();
 
         // 일주일 치 (5일) 반복
-        for (int i=0; i<5; i++) {
-            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+        for (int i = 0; i < 5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY + i - (cal.get(Calendar.DAY_OF_WEEK)));
             System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
             LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
@@ -194,12 +194,20 @@ public class StudentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("student not found"));
 
-        List<Double> list = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Calendar cal = Calendar.getInstance(Locale.KOREA);
+        cal.add(Calendar.DATE, -(week * 7));
 
-        for (int i=0; i<5; i++) {
+        // 월화수목금
+        for (int i = 0; i < 5; i++) {
+
+            cal.add(Calendar.DATE, Calendar.MONDAY + i - (cal.get(Calendar.DAY_OF_WEEK)));
+            System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
+            LocalDate day = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+
             StudentDayEmotionDto studentDayEmotion = new StudentDayEmotionDto();
             studentDayEmotion.setDay(i);
-            studentDayEmotion.setEmotionList(calcDayEmotion(studentId, week));
+            studentDayEmotion.setEmotionList(calcDayEmotion(day, student));
 
             StudentDayEmotionList.add(studentDayEmotion);
         }
@@ -208,40 +216,42 @@ public class StudentService {
 
     // 사용
     // 날짜별로 해당 감정 퍼센트 리스트 반환
-    // 지금 없는 값은 NaN 나오고 있음
-    public List<Double> calcDayEmotion(String studentId, int week) {
+    public List<Double> calcDayEmotion(LocalDate day, Student student) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        Calendar cal = Calendar.getInstance(Locale.KOREA);
-        cal.add(Calendar.DATE, -(week * 7));
+        List<Double> resultList = new ArrayList<>();
 
-        // 한 과목에 대해서만 집중 객체들 (subject id == 1)
+        try {
+            List<Emotion> emotionList = emotionRepository.findRecessListByStudentAndDateBetween(student, day, day);
+            double[] emotionRateList = {0,0,0,0,0,0,0};
+            int count = 0;
+            for (Emotion emotion : emotionList) {
 
-        List<Double> focusRateList = new ArrayList<>();
+                emotionRateList[0] += emotion.getAngry();
 
-        // 일주일 치 (5일) 반복
-        for (int i=0; i<5; i++) {
-            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
-            System.out.println("월요일 날짜 : " + sdf.format(cal.getTime()));
-            LocalDate monday1 = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+                emotionRateList[1] += emotion.getDisgust();
 
-            try {
-                List<Emotion> emotionList = emotionRepository.findByStudentIdAndDateBetween(studentId, monday1, monday1);
+                emotionRateList[2] += emotion.getFear();
 
-                Double result = 0.0;
-                int count = 0;
+                emotionRateList[3] += emotion.getHappy();
 
-                for (Emotion e : emotionList) {
-                    result += e.getHappy();
-                    count++;
-                }
-                focusRateList.add(result / count);
-            } catch (Exception e) {
-                focusRateList.add(0.0);
+                emotionRateList[4] += emotion.getNeutral();
+
+                emotionRateList[5] += emotion.getSad();
+
+                emotionRateList[6] += emotion.getSurprise();
+                count++;
             }
+            resultList.add(emotionRateList[0]/count);
+            resultList.add(emotionRateList[1]/count);
+            resultList.add(emotionRateList[2]/count);
+            resultList.add(emotionRateList[3]/count);
+            resultList.add(emotionRateList[4]/count);
+            resultList.add(emotionRateList[5]/count);
+            resultList.add(emotionRateList[6]/count);
+        } catch (Exception e) {
+            resultList.add(0.0);
         }
-
-        return focusRateList;
+        return resultList;
     }
 
     // 출석부
@@ -281,12 +291,13 @@ public class StudentService {
 
         List<Long> attendList = new ArrayList<>();
 
-        for (int i=0; i<5; i++) {
-            cal.add(Calendar.DATE, Calendar.MONDAY+i - (cal.get(Calendar.DAY_OF_WEEK)));
+        for (int i = 0; i < 5; i++) {
+            cal.add(Calendar.DATE, Calendar.MONDAY + i - (cal.get(Calendar.DAY_OF_WEEK)));
             System.out.println("i요일 날짜 : " + sdf.format(cal.getTime()));
             LocalDate day = LocalDate.ofInstant(cal.toInstant(), ZoneId.systemDefault());
 
-            List<Attendance> attendanceList = new ArrayList<>();;
+            List<Attendance> attendanceList = new ArrayList<>();
+            ;
 
             try {
                 attendanceList.add(attendanceRepository.findByStudentIdAndDateBetween(studentId, day, day));
@@ -296,7 +307,7 @@ public class StudentService {
                 }
 
             } catch (NullPointerException e) {
-                attendList.add(0L);
+                attendList.add(3L);
             }
         }
         return attendList;
