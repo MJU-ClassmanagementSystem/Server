@@ -47,15 +47,26 @@ public class TeacherService {
 
         // 과목 객체
         // -> 쉬는 시간은 나오면 안됨
+
         for (Subject subject : subjectList) {
             SubjectFocusRateDto SubjectFocusRate = new SubjectFocusRateDto();
-            SubjectFocusRate.setSubjectName(subject.getSubjectName());
-            // 집중도
-            SubjectFocusRate.setFocusRate(calcWeekFocus(week, subject.getId()));
-            // 흥미도
-            SubjectFocusRate.setInterestRate(calcWeekinterest(week, subject.getId()));
 
-            SubjectFocusRateList.add(SubjectFocusRate);
+            SubjectFocusRate.setSubjectName(subject.getSubjectName());
+            try {
+                // 집중도
+                SubjectFocusRate.setFocusRate(calcWeekFocus(week, subject.getId()));
+                // 흥미도
+                SubjectFocusRate.setInterestRate(calcWeekinterest(week, subject.getId()));
+
+                SubjectFocusRateList.add(SubjectFocusRate);
+            } catch (Exception e) {
+                // 집중도
+                SubjectFocusRate.setFocusRate(null);
+                // 흥미도
+                SubjectFocusRate.setInterestRate(null);
+
+                SubjectFocusRateList.add(SubjectFocusRate);
+            }
         }
 
         return SubjectFocusRateList;
