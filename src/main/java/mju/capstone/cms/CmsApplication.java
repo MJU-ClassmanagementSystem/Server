@@ -26,7 +26,7 @@ public class CmsApplication {
 						.allowedMethods("*")
 						.allowedHeaders("*")
 						.exposedHeaders("*")
-						.maxAge(3600)
+						.maxAge(360000)
 						.allowCredentials(false);
 			}
 		};
